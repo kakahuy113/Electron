@@ -1,0 +1,28 @@
+{
+  "name": "e-snake",
+  "version": "1.0.0",
+  "description": "Simple Electron based snake game",
+  "main": "main.js",
+  "scripts": {
+    "test": "test",
+    "start": "electron ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Maxime-Antoine/ESnake.git"
+  },
+  "keywords": [
+    "snake",
+    "electron",
+    "brython"
+  ],
+  "author": "Maxime Antoine",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Maxime-Antoine/ESnake/issues"
+  },
+  "homepage": "https://github.com/Maxime-Antoine/ESnake#readme",
+  "dependencies": {
+    "electron": "^8.2.5"
+  }
+}

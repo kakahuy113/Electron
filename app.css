@@ -1,0 +1,15 @@
+#canvas-container {
+    width: 100%;
+    height: 100vh;
+}
+
+#canvas {
+    background-color: darkslategray;
+    width: 1150px;
+    height: 800px;
+    margin: 0;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
