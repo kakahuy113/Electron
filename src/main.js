@@ -6,7 +6,7 @@ const createWindow = () => {
         height: 1000,
         webPreferences: { nodeIntegration: true }
     })
-    win.loadFile('index.html');
+    win.loadFile('src/index.html');
     //win.webContents.openDevTools();
 
     win.on('closed', () => {

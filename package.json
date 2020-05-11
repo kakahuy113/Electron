@@ -2,7 +2,7 @@
   "name": "e-snake",
   "version": "1.0.0",
   "description": "Simple Electron based snake game",
-  "main": "main.js",
+  "main": "src/main.js",
   "scripts": {
     "test": "test",
     "start": "electron ."
