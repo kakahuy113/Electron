@@ -1,8 +1,8 @@
 (function(){
     const blockSize = 10
-    const fps = 30
+    const initialFps = 15
+    const fpsIncrement = 3
     
-    const interval = 1000 / fps
     const mod = (n, m) => ((n % m) + m) % m
     const keys = {
         space: 32,
@@ -14,8 +14,6 @@
 
     const canvas = document.getElementById('canvas')
     const ctx = canvas.getContext('2d')
-    ctx.fillStyle = "rgb(200, 0, 0)"
-
     const canvasXSize = canvas.width
     const canvasYSize = canvas.height
 
@@ -70,6 +68,7 @@
         const snake = [[50, 100], [50, 90], [50, 80], [50, 70], [50, 60], [50, 50], [50, 40], [50, 30], [50, 20], [50, 10]]
         const food = randomFood(snake)
         return {
+            fps: initialFps,
             snake,
             direction: 'down',
             running: true,
@@ -79,23 +78,29 @@
 
     const clear = () => ctx.clearRect(0, 0, canvas.width, canvas.height)
     const render = state => {
-        const {running, snake, direction, food} = state
+        const {running, snake, direction, food, fps} = state
         if (!running) return
 
         const [newSnake, eat] = move(snake, direction, food)
-        let newFood = food
-        if (eat) newFood = randomFood(newSnake)
-
-        clear()
-        newSnake.forEach(([x, y]) => ctx.fillRect(x, y, blockSize, blockSize))
-        if (food) ctx.fillRect(food[0], food[1], blockSize, blockSize)
-
-        if (hasCollision(newSnake)) { 
-            alert('Loser !')
-            running = false
+        let newFood = food, newFps = fps
+        if (eat) { 
+            newFood = randomFood(newSnake)
+            newFps = fps + fpsIncrement
         }
 
-        return { ...state, snake: newSnake, running, food: newFood }
+        clear()
+        ctx.fillStyle = "rgb(200, 0, 0)"
+        newSnake.forEach(([x, y]) => ctx.fillRect(x, y, blockSize, blockSize))
+        ctx.fillStyle = "rgb(255, 255, 255)"
+        if (food) ctx.fillRect(food[0], food[1], blockSize, blockSize)
+
+        let newRunning = running
+        if (hasCollision(newSnake)) { 
+            alert('Loser !')
+            newRunning = false
+        }
+
+        return { ...state, snake: newSnake, running: newRunning, food: newFood, fps: newFps }
     }
 
     document.onkeydown = e => {
@@ -118,6 +123,7 @@
     const loop = () => {
         const currentTime = (new Date()).getTime()
         const delta = currentTime - lastTime
+        const interval = 1000 / state.fps
         if (delta > interval) {
             state = render(state)
             lastTime = currentTime
