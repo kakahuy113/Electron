@@ -101,16 +101,16 @@
     document.onkeydown = e => {
         switch(e.keyCode){
             case keys.left:
-                state.direction = 'left'
+                if (state.direction != 'right') state.direction = 'left'
                 break;
             case keys.up:
-                state.direction = 'up'
+                if (state.direction != 'down') state.direction = 'up'
                 break;
             case keys.right:
-                state.direction = 'right'
+                if (state.direction != 'left') state.direction = 'right'
                 break;
             case keys.down:
-                state.direction = 'down'
+                if (state.direction != 'up') state.direction = 'down'
                 break;
         }
     }
