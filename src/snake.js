@@ -1,28 +1,46 @@
 (function(){
+    const blockSize = 10
+    const fps = 30
+    
+    const interval = 1000 / fps
     const mod = (n, m) => ((n % m) + m) % m
-
     const keys = {
         left: 37,
         up: 38,
         right: 39,
         down: 40
     }
- 
+
     const canvas = document.getElementById('canvas')
     const ctx = canvas.getContext('2d')
     ctx.fillStyle = "rgb(200, 0, 0)"
 
     const canvasXSize = canvas.width
     const canvasYSize = canvas.height
-    const blockSize = 10
 
-    let currentSnake = [[50, 100], [50, 90], [50, 80], [50, 70], [50, 60], [50, 50], [50, 40], [50, 30], [50, 20], [50, 10]]
+    let state = {
+        snake: [[50, 100], [50, 90], [50, 80], [50, 70], [50, 60], [50, 50], [50, 40], [50, 30], [50, 20], [50, 10]],
+        direction: 'down',
+        running: true
+    }
 
-    const clear = () => ctx.clearRect(0, 0, canvasXSize, canvasYSize)
+    const clear = () => ctx.clearRect(0, 0, canvas.width, canvas.height)
+    const render = state => {
+        const {running, snake, direction} = state
+        if (!running) return
 
-    const render = snake => {
+        const newSnake = move(snake, direction)
+        console.log(newSnake)
+
         clear()
-        snake.forEach(([x, y]) => ctx.fillRect(x, y, blockSize, blockSize))
+        newSnake.forEach(([x, y]) => ctx.fillRect(x, y, blockSize, blockSize))
+
+        if (hasCollision(newSnake)) { 
+            alert('Loser !')
+            running = false
+        }
+
+        return { ...state, snake: newSnake, running }
     }
 
     const moveHead = (head, direction) => {
@@ -51,27 +69,30 @@
     document.onkeydown = e => {
         switch(e.keyCode){
             case keys.left:
-                currentSnake = move(currentSnake, 'left')
-                render(currentSnake)
-                if (hasCollision(currentSnake)) alert('Loser !')
+                state.direction = 'left'
                 break;
             case keys.up:
-                currentSnake = move(currentSnake, 'up')
-                render(currentSnake)
-                if (hasCollision(currentSnake)) alert('Loser !')
+                state.direction = 'up'
                 break;
             case keys.right:
-                currentSnake = move(currentSnake, 'right')
-                render(currentSnake)
-                if (hasCollision(currentSnake)) alert('Loser !')
+                state.direction = 'right'
                 break;
             case keys.down:
-                currentSnake = move(currentSnake, 'down')
-                render(currentSnake)
-                if (hasCollision(currentSnake)) alert('Loser !')
+                state.direction = 'down'
                 break;
         }
     }
 
-    render(currentSnake)
+    const loop = () => {
+        const currentTime = (new Date()).getTime()
+        const delta = currentTime - lastTime
+        if (delta > interval) {
+            state = render(state)
+            lastTime = currentTime
+        }
+        requestAnimationFrame(loop)
+    }
+
+    lastTime = (new Date()).getTime()
+    requestAnimationFrame(loop)
 })()
