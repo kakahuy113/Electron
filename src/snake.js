@@ -5,6 +5,7 @@
     const interval = 1000 / fps
     const mod = (n, m) => ((n % m) + m) % m
     const keys = {
+        space: 32,
         left: 37,
         up: 38,
         right: 39,
@@ -18,31 +19,6 @@
     const canvasXSize = canvas.width
     const canvasYSize = canvas.height
 
-    let state = {
-        snake: [[50, 100], [50, 90], [50, 80], [50, 70], [50, 60], [50, 50], [50, 40], [50, 30], [50, 20], [50, 10]],
-        direction: 'down',
-        running: true
-    }
-
-    const clear = () => ctx.clearRect(0, 0, canvas.width, canvas.height)
-    const render = state => {
-        const {running, snake, direction} = state
-        if (!running) return
-
-        const newSnake = move(snake, direction)
-        console.log(newSnake)
-
-        clear()
-        newSnake.forEach(([x, y]) => ctx.fillRect(x, y, blockSize, blockSize))
-
-        if (hasCollision(newSnake)) { 
-            alert('Loser !')
-            running = false
-        }
-
-        return { ...state, snake: newSnake, running }
-    }
-
     const moveHead = (head, direction) => {
         const [hx, hy] = head
         switch(direction){
@@ -53,17 +29,73 @@
         }
     }
 
-    const move = (snake, direction) => {
+    const move = (snake, direction, food) => {
         const head = snake[0]
         const newHead = moveHead(head, direction)
-        const newTail = snake.slice(0, -1)
-        return [newHead].concat(newTail)
+        const eat = pointMatch(newHead, food)
+        const newTail = eat ? snake : snake.slice(0, -1)
+        return [[newHead].concat(newTail), eat]
     }
 
     const hasCollision = snake => {
         const [head, ...tail] = snake
         const [hx, hy] = head
         return tail.some(([x, y]) => x === hx && y === hy)
+    }
+
+    const pointMatch = (p1, p2) => {
+        const [x1, y1] = p1
+        const [x2, y2] = p2
+        return x1 === x2 && y1 === y2
+    }
+
+    const isPartOfSnake = (snake, point) => {
+        const [px, py] = point
+        return snake.some(([x, y]) => px === x && py === y)
+    }
+
+    const randomPoint = () => {
+        const x = Math.floor(Math.random() * canvasXSize / blockSize) * blockSize
+        const y = Math.floor(Math.random() * canvasYSize / blockSize) * blockSize
+        return [x, y]
+    }
+
+    const randomFood = snake => {
+        let food
+        do { food = randomPoint() } while(isPartOfSnake(snake, food))
+        return food
+    }
+
+    const initState = () => {
+        const snake = [[50, 100], [50, 90], [50, 80], [50, 70], [50, 60], [50, 50], [50, 40], [50, 30], [50, 20], [50, 10]]
+        const food = randomFood(snake)
+        return {
+            snake,
+            direction: 'down',
+            running: true,
+            food
+        }
+    }
+
+    const clear = () => ctx.clearRect(0, 0, canvas.width, canvas.height)
+    const render = state => {
+        const {running, snake, direction, food} = state
+        if (!running) return
+
+        const [newSnake, eat] = move(snake, direction, food)
+        let newFood = food
+        if (eat) newFood = randomFood(newSnake)
+
+        clear()
+        newSnake.forEach(([x, y]) => ctx.fillRect(x, y, blockSize, blockSize))
+        if (food) ctx.fillRect(food[0], food[1], blockSize, blockSize)
+
+        if (hasCollision(newSnake)) { 
+            alert('Loser !')
+            running = false
+        }
+
+        return { ...state, snake: newSnake, running, food: newFood }
     }
 
     document.onkeydown = e => {
@@ -93,6 +125,7 @@
         requestAnimationFrame(loop)
     }
 
+    let state = initState()
     lastTime = (new Date()).getTime()
     requestAnimationFrame(loop)
 })()
