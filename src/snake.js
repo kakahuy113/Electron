@@ -17,6 +17,8 @@
     const canvasXSize = canvas.width
     const canvasYSize = canvas.height
 
+    const displayScore = score => document.getElementById('score').innerText = score
+
     const moveHead = (head, direction) => {
         const [hx, hy] = head
         switch(direction){
@@ -72,18 +74,21 @@
             snake,
             direction: 'down',
             running: true,
-            food
+            food,
+            score: 0
         }
     }
 
     const clear = () => ctx.clearRect(0, 0, canvas.width, canvas.height)
     const render = state => {
-        const {running, snake, direction, food, fps} = state
+        const {running, snake, direction, food, fps, score} = state
         if (!running) return
 
         const [newSnake, eat] = move(snake, direction, food)
-        let newFood = food, newFps = fps
+        let newFood = food, newFps = fps, newScore = score
         if (eat) { 
+            newScore++
+            displayScore(newScore)
             newFood = randomFood(newSnake)
             newFps = fps + fpsIncrement
         }
@@ -100,7 +105,7 @@
             newRunning = false
         }
 
-        return { ...state, snake: newSnake, running: newRunning, food: newFood, fps: newFps }
+        return { ...state, snake: newSnake, running: newRunning, food: newFood, fps: newFps, score: newScore }
     }
 
     document.onkeydown = e => {
