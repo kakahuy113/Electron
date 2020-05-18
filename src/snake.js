@@ -99,13 +99,13 @@
         ctx.fillStyle = "rgb(255, 255, 255)"
         if (food) ctx.fillRect(food[0], food[1], blockSize, blockSize)
 
-        let newRunning = running
         if (hasCollision(newSnake)) { 
             alert('Loser !')
-            newRunning = false
+            displayScore(0)
+            return initState()
         }
 
-        return { ...state, snake: newSnake, running: newRunning, food: newFood, fps: newFps, score: newScore }
+        return { ...state, snake: newSnake, food: newFood, fps: newFps, score: newScore }
     }
 
     document.onkeydown = e => {
