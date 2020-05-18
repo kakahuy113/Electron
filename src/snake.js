@@ -82,7 +82,7 @@
     const clear = () => ctx.clearRect(0, 0, canvas.width, canvas.height)
     const render = state => {
         const {running, snake, direction, food, fps, score} = state
-        if (!running) return
+        if (!running) return state
 
         const [newSnake, eat] = move(snake, direction, food)
         let newFood = food, newFps = fps, newScore = score
@@ -121,6 +121,9 @@
                 break;
             case keys.down:
                 if (state.direction != 'up') state.direction = 'down'
+                break;
+            case keys.space:
+                state.running = !state.running
                 break;
         }
     }
